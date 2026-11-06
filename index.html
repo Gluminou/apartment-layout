@@ -102,9 +102,9 @@ ol,ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
       <p class="hint">Pieces snap to 2.5 cm. A red piece goes past a wall, overlaps another piece or a built-in counter, or blocks a door swing.</p>
     </div>
 
-    <div class="box notes">
+    <div class="box notes" id="notes">
       <h2>Why this layout</h2>
-      <h3>Living, dining &amp; kitchen</h3>
+      <div id="notesBody"><h3>Living, dining &amp; kitchen</h3>
       <ul>
         <li><b>Sofa on the kitchen wall,</b> chaise toward dining as a soft divider, keeping the balcony door clear. Modular, so Mirror flips the chaise.</li>
         <li><b>TV stand on the office wall,</b> facing the sofa, about 2.2 m from the seat.</li>
@@ -131,8 +131,16 @@ ol,ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
       </ul>
       <h3>Helper's room</h3>
       <ul><li><b>Helper bed</b> (175 × 80 cm) along the long wall away from the door, head at the far end. Its foot reaches into the door swing, so it shows red: the door opens to about 50°, leaving a passage of roughly 65 cm. A door rehung to open outward, or a folding door, would clear it fully.</li>
-        <li>Keep the wall cabinet by the door reachable: nothing tall in front of it.</li></ul>
+        <li>Keep the wall cabinet by the door reachable: nothing tall in front of it.</li></ul></div>
     </div>
+  </div>
+
+  <div class="box appbar">
+    <div class="actions">
+      <button id="refresh" type="button">Refresh</button>
+      <button id="share" type="button">Share app</button>
+    </div>
+    <p class="hint" id="appinfo">Updates arrive on their own each time you open the app.</p>
   </div>
 </div>
 
@@ -170,41 +178,25 @@ const STATIC=[
  {x:1139,y:317,w:61,h:263,name:'built-in counter'},
  {x:1035,y:517,w:165,h:63,name:'built-in counter'}
 ];
-const DEFAULTS=[
- {id:'dining',label:'Dining table',name:'Dining table + chairs',w:121,h:120,rects:[[0,0,121,120]],x:785,y:20,rot:0,mir:false},
- {id:'hbed',label:'Helper bed',name:'Helper bed',w:175,h:80,rects:[[0,0,175,80]],x:575,y:0,rot:90,mir:false},
- {id:'tv',label:'TV stand',name:'TV stand',w:166,h:42,rects:[[0,0,166,42]],x:725,y:380,rot:90,mir:false},
- {id:'sofa',label:'L-shaped sofa',name:'L-shaped sofa',w:200,h:162,rects:[[0,0,200,90],[0,90,90,72]],x:862.5,y:370,rot:90,mir:false},
- {id:'coffee',label:'Coffee table',name:'Coffee table',w:100,h:58,rects:[[0,0,100,58]],x:845,y:467.5,rot:90,mir:false},
- {id:'shoe',label:'Shoe rack',name:'Shoe rack',w:80,h:36,rects:[[0,0,80,36]],x:989,y:95,rot:90,mir:false},
- {id:'p84',label:'Bookshelf',name:'Bookshelf (dining)',w:84,h:35,rects:[[0,0,84,35]],x:725,y:150,rot:90,mir:false},
- {id:'shelf',label:'Shelf unit',name:'Shelf unit (kitchen)',w:92,h:36,rects:[[0,0,92,36]],x:1035,y:345,rot:90,mir:false},
- {id:'wardrobe',label:'Wardrobe',name:'Wardrobe',w:80,h:48,rects:[[0,0,80,48]],x:272.5,y:340,rot:0,mir:false},
- {id:'bed',label:'Bed',name:"Bed (daughter's)",w:170,h:80,rects:[[0,0,170,80]],x:272.5,y:445,rot:90,mir:false},
- {id:'bedside',label:'Bedside',name:'Bedside table',w:40,h:36,rects:[[0,0,40,36]],x:352.5,y:579,rot:0,mir:false},
- {id:'mwardrobe',label:'Wardrobe (to buy)',name:'Wardrobe (master, to buy)',w:140,h:60,rects:[[0,0,140,60]],x:2.5,y:185,rot:0,mir:false},
- {id:'piano',label:'Piano',name:'Piano',w:137,h:55,rects:[[0,0,137,55]],x:427.5,y:437.5,rot:90,mir:false},
- {id:'mbed',label:'Bed',name:'Bed (master)',w:200,h:145,rects:[[0,0,200,145]],x:0,y:372.5,rot:0,mir:false},
- {id:'bs1',label:'Bookshelf 1',name:'Bookshelf 1',w:81,h:28,rects:[[0,0,81,28]],x:100,y:587,rot:0,mir:false},
- {id:'mstand',label:'Bedstand',name:'Bedstand (master)',w:45,h:41,rects:[[0,0,45,41]],x:0,y:520,rot:90,mir:false},
- {id:'bs2',label:'Bookshelf 2',name:'Bookshelf 2',w:40.5,h:28,rects:[[0,0,40.5,28]],x:0,y:330,rot:90,mir:false},
- {id:'desk',label:'Desk',name:'Desk + chair space',w:160,h:155,rects:[[0,0,160,80],[40,80,80,75,1]],x:507.5,y:455,rot:270,mir:false},
- {id:'bs3',label:'Bookshelf 3',name:'Bookshelf 3',w:147,h:39.5,rects:[[0,0,147,39.5]],x:678,y:425,rot:90,mir:false}
-];
+let DEFAULTS=[{"id": "dining", "label": "Dining table", "name": "Dining table + chairs", "w": 121, "h": 120, "rects": [[0, 0, 121, 120]], "x": 785, "y": 20, "rot": 0, "mir": false}, {"id": "hbed", "label": "Helper bed", "name": "Helper bed", "w": 175, "h": 80, "rects": [[0, 0, 175, 80]], "x": 575, "y": 0, "rot": 90, "mir": false}, {"id": "tv", "label": "TV stand", "name": "TV stand", "w": 166, "h": 42, "rects": [[0, 0, 166, 42]], "x": 725, "y": 380, "rot": 90, "mir": false}, {"id": "sofa", "label": "L-shaped sofa", "name": "L-shaped sofa", "w": 200, "h": 162, "rects": [[0, 0, 200, 90], [0, 90, 90, 72]], "x": 862.5, "y": 370, "rot": 90, "mir": false}, {"id": "coffee", "label": "Coffee table", "name": "Coffee table", "w": 100, "h": 58, "rects": [[0, 0, 100, 58]], "x": 845, "y": 467.5, "rot": 90, "mir": false}, {"id": "shoe", "label": "Shoe rack", "name": "Shoe rack", "w": 80, "h": 36, "rects": [[0, 0, 80, 36]], "x": 989, "y": 95, "rot": 90, "mir": false}, {"id": "p84", "label": "Bookshelf", "name": "Bookshelf (dining)", "w": 84, "h": 35, "rects": [[0, 0, 84, 35]], "x": 725, "y": 150, "rot": 90, "mir": false}, {"id": "shelf", "label": "Shelf unit", "name": "Shelf unit (kitchen)", "w": 92, "h": 36, "rects": [[0, 0, 92, 36]], "x": 1035, "y": 345, "rot": 90, "mir": false}, {"id": "wardrobe", "label": "Wardrobe", "name": "Wardrobe", "w": 80, "h": 48, "rects": [[0, 0, 80, 48]], "x": 272.5, "y": 340, "rot": 0, "mir": false}, {"id": "bed", "label": "Bed", "name": "Bed (daughter's)", "w": 170, "h": 80, "rects": [[0, 0, 170, 80]], "x": 272.5, "y": 445, "rot": 90, "mir": false}, {"id": "bedside", "label": "Bedside", "name": "Bedside table", "w": 40, "h": 36, "rects": [[0, 0, 40, 36]], "x": 352.5, "y": 579, "rot": 0, "mir": false}, {"id": "mwardrobe", "label": "Wardrobe (to buy)", "name": "Wardrobe (master, to buy)", "w": 140, "h": 60, "rects": [[0, 0, 140, 60]], "x": 2.5, "y": 185, "rot": 0, "mir": false}, {"id": "piano", "label": "Piano", "name": "Piano", "w": 137, "h": 55, "rects": [[0, 0, 137, 55]], "x": 427.5, "y": 437.5, "rot": 90, "mir": false}, {"id": "mbed", "label": "Bed", "name": "Bed (master)", "w": 200, "h": 145, "rects": [[0, 0, 200, 145]], "x": 0, "y": 372.5, "rot": 0, "mir": false}, {"id": "bs1", "label": "Bookshelf 1", "name": "Bookshelf 1", "w": 81, "h": 28, "rects": [[0, 0, 81, 28]], "x": 100, "y": 587, "rot": 0, "mir": false}, {"id": "mstand", "label": "Bedstand", "name": "Bedstand (master)", "w": 45, "h": 41, "rects": [[0, 0, 45, 41]], "x": 0, "y": 520, "rot": 90, "mir": false}, {"id": "bs2", "label": "Bookshelf 2", "name": "Bookshelf 2", "w": 40.5, "h": 28, "rects": [[0, 0, 40.5, 28]], "x": 0, "y": 330, "rot": 90, "mir": false}, {"id": "desk", "label": "Desk", "name": "Desk + chair space", "w": 160, "h": 155, "rects": [[0, 0, 160, 80], [40, 80, 80, 75, 1]], "x": 507.5, "y": 455, "rot": 270, "mir": false}, {"id": "bs3", "label": "Bookshelf 3", "name": "Bookshelf 3", "w": 147, "h": 39.5, "rects": [[0, 0, 147, 39.5]], "x": 678, "y": 425, "rot": 90, "mir": false}]; // fallback copy; furniture.json is the source
 const KEY='apt-layout-v1';
-let pieces=load(); let selId='sofa'; let drag=null; let zoom=1;
+let pieces; let selId='sofa'; let drag=null; let zoom=1;
 const svg=document.getElementById('plan');
 
 function clone(o){return JSON.parse(JSON.stringify(o))}
+const sig=d=>JSON.stringify([d.x,d.y,d.rot,d.mir,d.w,d.h,d.rects]);
 function load(){
   let saved=null; try{saved=JSON.parse(localStorage.getItem(KEY))}catch(e){}
   if(!Array.isArray(saved)) return clone(DEFAULTS);
-  const out=DEFAULTS.map(d=>{const v=saved.find(q=>q&&q.id===d.id);return v?Object.assign(clone(d),{x:v.x,y:v.y,rot:v.rot,mir:v.mir}):clone(d)});
+  // Keep a piece where the viewer moved it, unless the proposal for that piece changed since: then take the new proposal.
+  const out=DEFAULTS.map(d=>{const v=saved.find(q=>q&&q.id===d.id);
+    const fresh=!v||(v.def&&v.def!==sig(d))||(!v.def&&(v.w!==d.w||v.h!==d.h));
+    return fresh?clone(d):Object.assign(clone(d),{x:v.x,y:v.y,rot:v.rot,mir:v.mir})});
   const pi=out.find(q=>q.id==='piano'), wa=out.find(q=>q.id==='mwardrobe');
   if(rectsOf(pi).some(a=>rectsOf(wa).some(b=>overlap(a,b)))) Object.assign(pi,clone(DEFAULTS.find(d=>d.id==='piano')));
   return out;
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(pieces))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(pieces.map(p=>{const d=DEFAULTS.find(q=>q.id===p.id);return {id:p.id,x:p.x,y:p.y,rot:p.rot,mir:p.mir,w:p.w,h:p.h,def:d?sig(d):''}})))}catch(e){}}
 function dims(p){return (p.rot%180===0)?{W:p.w,H:p.h}:{W:p.h,H:p.w}}
 function rectsOf(p){
   const W=p.w,H=p.h;
@@ -368,7 +360,48 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   document.querySelectorAll('[data-z]').forEach(t=>t.setAttribute('aria-pressed',t===b));
   svg.style.width=(zoom*100)+'%';
 });
-render();
+// ---- data loading and self-update
+const APP_VERSION='2026110602';
+const DATA_KEY='apt-furniture-cache';
+try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
+pieces=load(); render();
+
+let lastData='';
+async function fetchData(){
+  try{
+    const r=await fetch('furniture.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
+    const txt=await r.text(); if(txt===lastData) return; lastData=txt;
+    const data=JSON.parse(txt); if(!Array.isArray(data.pieces)) return;
+    if(!drag){ DEFAULTS=data.pieces; pieces=load();
+      if(data.notes) document.getElementById('notesBody').innerHTML=data.notes;
+      if(!pieces.find(p=>p.id===selId)) selId=pieces[0]&&pieces[0].id; render(); }
+    try{localStorage.setItem(DATA_KEY,txt)}catch(e){}
+    if(data.updated) document.getElementById('appinfo').textContent='Layout last updated '+data.updated+'. Updates arrive on their own each time you open the app.';
+  }catch(e){}
+}
+async function checkVersion(){
+  try{
+    const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
+    const v=(await r.json()).version;
+    if(v&&v!==APP_VERSION){
+      let tried=''; try{tried=sessionStorage.getItem('apt-reload')}catch(e){}
+      if(tried===v) return; try{sessionStorage.setItem('apt-reload',v)}catch(e){}
+      location.replace(location.pathname+'?v='+v);
+    }
+  }catch(e){}
+}
+function refreshAll(){fetchData();checkVersion();}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') refreshAll()});
+window.addEventListener('pageshow',e=>{if(e.persisted) refreshAll()});
+refreshAll();
+
+document.getElementById('refresh').addEventListener('click',()=>{location.replace(location.pathname+'?v='+Date.now())});
+document.getElementById('share').addEventListener('click',async()=>{
+  const url=location.origin+location.pathname;
+  try{ if(navigator.share){ await navigator.share({title:'Apartment Layout',url}); return; } }catch(e){ return; }
+  try{ await navigator.clipboard.writeText(url); document.getElementById('appinfo').textContent='Link copied: '+url; }
+  catch(e){ document.getElementById('appinfo').textContent='Link: '+url; }
+});
 })();
 </script>
 </body>
