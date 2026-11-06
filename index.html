@@ -368,7 +368,7 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026110603';
+const APP_VERSION='2026110604';
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
@@ -391,8 +391,10 @@ async function checkVersion(){
     const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
     const v=(await r.json()).version;
     if(v&&v!==APP_VERSION){
-      let tried=''; try{tried=sessionStorage.getItem('apt-reload')}catch(e){}
-      if(tried===v) return; try{sessionStorage.setItem('apt-reload',v)}catch(e){}
+      // Avoid a reload loop if the new version is still publishing, but try again after a minute.
+      let last=null; try{last=JSON.parse(sessionStorage.getItem('apt-reload'))}catch(e){}
+      if(last&&last.v===v&&Date.now()-last.t<60000) return;
+      try{sessionStorage.setItem('apt-reload',JSON.stringify({v,t:Date.now()}))}catch(e){}
       location.replace(location.pathname+'?v='+v);
     }
   }catch(e){}
