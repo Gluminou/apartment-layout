@@ -17,3 +17,7 @@ Positions you move are saved in your browser on that device only.
 - `version.json` holds the app version. When `index.html` changes, the version is bumped and the app reloads itself onto the new version.
 - Positions you move yourself are kept, unless the proposal for that same piece changes. Then the new proposal replaces it.
 - **Refresh** forces a fresh load. **Share app** sends the link.
+
+## Saving a layout
+
+Tap **Save layout**. The app shares or copies a code starting with `APT1:` that lists every piece's position. Paste that code to Claude, who writes it into `furniture.json` as the official layout, so every device shows it after the next open.
