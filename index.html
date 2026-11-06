@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Apartment Layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: drafting-sheet plan on the left, a narrow spec panel on the right; stacks on phones */
+:root{
+  --paper:#EEF0EC; --surface:#F8F9F6; --ink:#1E2629; --muted:#5B676B; --line:#D3D8D2;
+  --wall:#2A3236; --dim:#C2412D; --furn:#CBD8DE; --furn-edge:#4F6A75; --sel:#2F6F8F;
+  --zone:#E3E7E1; --bad:#B3261E; --badfill:#F3D6D2;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#13181A; --surface:#1A2023; --ink:#E3E8E9; --muted:#97A3A7; --line:#2C3538;
+  --wall:#C7D0D3; --dim:#EE7A61; --furn:#2B3C43; --furn-edge:#8FB0BD; --sel:#72B9D8;
+  --zone:#1E2528; --bad:#F2857C; --badfill:#4A2422; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#13181A; --surface:#1A2023; --ink:#E3E8E9; --muted:#97A3A7; --line:#2C3538;
+  --wall:#C7D0D3; --dim:#EE7A61; --furn:#2B3C43; --furn-edge:#8FB0BD; --sel:#72B9D8;
+  --zone:#1E2528; --bad:#F2857C; --badfill:#4A2422; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:20px}
+header h1{font-family:var(--f-display);font-weight:600;font-size:1.9rem;line-height:1.1;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.eyebrow{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.main{grid-template-columns:minmax(0,1fr)}}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.panel{display:grid;gap:16px;min-width:0}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.box h2{font-family:var(--f-display);font-weight:600;font-size:1.15rem;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button{font:600 .9rem var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);
+  border-radius:4px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--furn-edge)}
+button:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+button[aria-pressed="true"]{border-color:var(--sel);color:var(--sel)}
+button:disabled{opacity:.4;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.spec{font-family:var(--f-mono);font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--muted);margin:2px 0 0}
+.clear{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:10px;font-variant-numeric:tabular-nums}
+.clear dt{color:var(--muted)} .clear dd{margin:0;font-family:var(--f-mono);font-size:.88rem}
+.warn{color:var(--bad);font-weight:600;margin-top:8px}
+ol,ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+/* svg classes */
+.wall{fill:var(--wall)} .zone{fill:var(--zone)} .grid{stroke:var(--line);stroke-width:.4}
+.zlabel{fill:var(--muted);font:600 14px var(--f-display);letter-spacing:.12em;opacity:.7}
+.dimt{fill:var(--dim);font:500 9px var(--f-mono)} .diml{stroke:var(--dim);stroke-width:.8}
+.door{fill:none;stroke:var(--muted);stroke-width:.8} .open{stroke:var(--muted);stroke-width:.8;stroke-dasharray:3 3}
+.olabel{fill:var(--muted);font:400 8px var(--f-body)}
+.piece rect{fill:var(--furn);stroke:var(--furn-edge);stroke-width:1.2}
+.piece.sel rect{stroke:var(--sel);stroke-width:2.2}
+.piece.bad rect{fill:var(--badfill);stroke:var(--bad)}
+.piece{cursor:grab} .piece text{fill:var(--ink);font:600 8.5px var(--f-body);pointer-events:none}
+.glass{stroke:var(--sel);stroke-width:2} .piece rect.seat{fill:none;stroke-dasharray:3 2;stroke-width:1} .piece text.seatt{fill:var(--muted);font-weight:400} .tabs{margin:2px 2px 8px}
+.zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 2px 8px}
+.zoombar span{color:var(--muted);font-size:.85rem;margin-right:4px}
+.scroller{overflow:auto;-webkit-overflow-scrolling:touch;border-radius:4px}
+#plan{touch-action:pan-x pan-y pinch-zoom} .piece{touch-action:none}
+.fixed{fill:var(--line)} .flabel{fill:var(--muted);font:600 11px var(--f-display);letter-spacing:.08em}
+.rlabel{fill:var(--muted);font:600 15px var(--f-display);letter-spacing:.12em;opacity:.75}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;align-items:start}
+.notes h3{font-family:var(--f-display);font-weight:600;font-size:1rem;margin:14px 0 6px}
+.notes h3:first-of-type{margin-top:0}
+.room{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:10px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Whole apartment · drawn to scale · cm</div>
+    <h1>Apartment Layout</h1>
+    <p>Every room on one plan. Drag any piece anywhere, including into another room, tap it to see its clearances in red, and use Rotate or Mirror to try alternatives. Zoom in on a phone and scroll around the plan.</p>
+  </header>
+
+  <div class="sheet">
+    <div class="zoombar"><span>Zoom</span><button type="button" data-z="1" aria-pressed="true">Fit</button><button type="button" data-z="2" aria-pressed="false">2×</button><button type="button" data-z="3" aria-pressed="false">3×</button></div>
+    <div class="scroller" id="scroller"><svg id="plan" viewBox="-30 -42 1260 735" aria-label="Floor plan of the whole apartment with furniture"></svg></div>
+  </div>
+
+  <div class="cols">
+    <div class="box">
+      <h2>Furniture</h2>
+      <div class="chips" id="chips"></div>
+      <div id="detail"></div>
+      <div class="actions">
+        <button id="rot" type="button">Rotate 90°</button>
+        <button id="mir" type="button">Mirror</button>
+        <button id="reset" type="button">Reset to proposal</button>
+      </div>
+      <p class="hint">Pieces snap to 2.5 cm. A red piece goes past a wall, overlaps another piece or a built-in counter, or blocks a door swing.</p>
+    </div>
+
+    <div class="box notes">
+      <h2>Why this layout</h2>
+      <h3>Living, dining &amp; kitchen</h3>
+      <ul>
+        <li><b>Sofa on the kitchen wall,</b> chaise toward dining as a soft divider, keeping the balcony door clear. Modular, so Mirror flips the chaise.</li>
+        <li><b>TV stand on the office wall,</b> facing the sofa, about 2.2 m from the seat.</li>
+        <li><b>Coffee table</b> about 30 cm from the sofa, with about 78 cm to walk past the TV.</li>
+        <li><b>Dining table</b> clear of the entrance door, with about 83 cm of path into the living area.</li>
+        <li><b>Shoe rack</b> just past the entrance door swing. <b>Bookshelf</b> on the dining wall by the corridor.</li>
+        <li><b>Kitchen shelf unit</b> below the kitchen door, about 68 cm from the L-shaped counter.</li>
+      </ul>
+      <h3>Master bedroom</h3>
+      <ul>
+        <li><b>Wardrobe (to buy)</b> in the top-left recess, drawn at the size to shop for: up to 140 cm wide and 60 cm deep, with a small gap at the sides and back. Confirm the recess on site before buying.</li>
+        <li><b>Bed</b> headboard on the outer wall, reachable from both sides, with about 1.3 m in front of the wardrobe to open its doors.</li>
+        <li><b>Bookshelf 2</b> as a bedside shelf on one side of the bed, <b>bedstand</b> on the other, both against the headboard wall.</li>
+        <li><b>Bookshelf 1</b> on the utility platform wall, shifted along to free the corner for the bedstand and still clear of the utility door.</li>
+      </ul>
+      <h3>Daughter's room</h3>
+      <ul>
+        <li><b>Wardrobe</b> beside the door, <b>bed</b> along the master bedroom wall, <b>bedside table</b> by the window.</li>
+        <li><b>Piano</b> on the office wall, facing the bed, with about 75 cm between them for the bench. It sits just past the door swing.</li>
+      </ul>
+      <h3>Office</h3>
+      <ul>
+        <li><b>Desk</b> along the wall shared with your daughter's room, side-lit by the window, with 75 cm of chair space. <b>Bookshelf 3</b> behind you.</li>
+      </ul>
+      <h3>Helper's room</h3>
+      <ul><li><b>Helper bed</b> (175 × 80 cm) along the long wall away from the door, head at the far end. Its foot reaches into the door swing, so it shows red: the door opens to about 50°, leaving a passage of roughly 65 cm. A door rehung to open outward, or a folding door, would clear it fully.</li>
+        <li>Keep the wall cabinet by the door reachable: nothing tall in front of it.</li></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+// Global plan coordinates in cm. Origin: inner top-left corner of the master bedroom column line.
+const FLOOR=[
+ {x:0,y:182.5,w:145,h:67.5},            // MBR piano recess
+ {x:0,y:250,w:265,h:365},               // MBR main
+ {x:265,y:250,w:460,h:83},              // corridor (incl. MBR entry)
+ {x:272.5,y:340,w:210,h:275},           // BR2
+ {x:507.5,y:340,w:210,h:275},           // BR1
+ {x:575,y:0,w:125,h:235},               // helper room (ST)
+ {x:725,y:0,w:300,h:615},               // living / dining
+ {x:1035,y:250,w:165,h:330},            // kitchen
+ {x:386.5,y:333,w:82,h:7},{x:624.5,y:333,w:77,h:7},{x:615,y:235,w:85,h:15},{x:1025,y:262,w:10,h:76} // door openings
+];
+const ROOMS=[
+ {name:'Master bedroom',r:[{x:0,y:182.5,w:265,h:432.5},{x:265,y:250,w:116,h:83}]},
+ {name:'Corridor',r:[{x:381,y:250,w:344,h:83}]},
+ {name:"Daughter's room",r:[{x:272.5,y:333,w:210,h:282}]},
+ {name:'Office',r:[{x:507.5,y:333,w:210,h:282}]},
+ {name:"Helper's room",r:[{x:575,y:0,w:125,h:250}]},
+ {name:'Dining',r:[{x:725,y:0,w:300,h:250}]},
+ {name:'Living',r:[{x:725,y:250,w:300,h:365}]},
+ {name:'Kitchen',r:[{x:1025,y:250,w:175,h:330}]}
+];
+const STATIC=[
+ {x:920,y:0,w:90,h:90,name:'entrance door swing',door:1},
+ {x:1035,y:262,w:76,h:76,name:'kitchen door swing',door:1},
+ {x:386.5,y:340,w:82,h:82,name:"daughter's room door swing",door:1},
+ {x:624.5,y:340,w:77,h:77,name:'office door swing',door:1},
+ {x:297,y:250,w:84,h:83,name:'master bedroom door swing',door:1},
+ {x:615,y:151,w:85,h:84,name:"helper's room door swing",door:1},
+ {x:1139,y:317,w:61,h:263,name:'built-in counter'},
+ {x:1035,y:517,w:165,h:63,name:'built-in counter'}
+];
+const DEFAULTS=[
+ {id:'dining',label:'Dining table',name:'Dining table + chairs',w:121,h:120,rects:[[0,0,121,120]],x:785,y:20,rot:0,mir:false},
+ {id:'hbed',label:'Helper bed',name:'Helper bed',w:175,h:80,rects:[[0,0,175,80]],x:575,y:0,rot:90,mir:false},
+ {id:'tv',label:'TV stand',name:'TV stand',w:166,h:42,rects:[[0,0,166,42]],x:725,y:380,rot:90,mir:false},
+ {id:'sofa',label:'L-shaped sofa',name:'L-shaped sofa',w:200,h:162,rects:[[0,0,200,90],[0,90,90,72]],x:862.5,y:370,rot:90,mir:false},
+ {id:'coffee',label:'Coffee table',name:'Coffee table',w:100,h:58,rects:[[0,0,100,58]],x:845,y:467.5,rot:90,mir:false},
+ {id:'shoe',label:'Shoe rack',name:'Shoe rack',w:80,h:36,rects:[[0,0,80,36]],x:989,y:95,rot:90,mir:false},
+ {id:'p84',label:'Bookshelf',name:'Bookshelf (dining)',w:84,h:35,rects:[[0,0,84,35]],x:725,y:150,rot:90,mir:false},
+ {id:'shelf',label:'Shelf unit',name:'Shelf unit (kitchen)',w:92,h:36,rects:[[0,0,92,36]],x:1035,y:345,rot:90,mir:false},
+ {id:'wardrobe',label:'Wardrobe',name:'Wardrobe',w:80,h:48,rects:[[0,0,80,48]],x:272.5,y:340,rot:0,mir:false},
+ {id:'bed',label:'Bed',name:"Bed (daughter's)",w:170,h:80,rects:[[0,0,170,80]],x:272.5,y:445,rot:90,mir:false},
+ {id:'bedside',label:'Bedside',name:'Bedside table',w:40,h:36,rects:[[0,0,40,36]],x:352.5,y:579,rot:0,mir:false},
+ {id:'mwardrobe',label:'Wardrobe (to buy)',name:'Wardrobe (master, to buy)',w:140,h:60,rects:[[0,0,140,60]],x:2.5,y:185,rot:0,mir:false},
+ {id:'piano',label:'Piano',name:'Piano',w:137,h:55,rects:[[0,0,137,55]],x:427.5,y:437.5,rot:90,mir:false},
+ {id:'mbed',label:'Bed',name:'Bed (master)',w:200,h:145,rects:[[0,0,200,145]],x:0,y:372.5,rot:0,mir:false},
+ {id:'bs1',label:'Bookshelf 1',name:'Bookshelf 1',w:81,h:28,rects:[[0,0,81,28]],x:100,y:587,rot:0,mir:false},
+ {id:'mstand',label:'Bedstand',name:'Bedstand (master)',w:45,h:41,rects:[[0,0,45,41]],x:0,y:520,rot:90,mir:false},
+ {id:'bs2',label:'Bookshelf 2',name:'Bookshelf 2',w:40.5,h:28,rects:[[0,0,40.5,28]],x:0,y:330,rot:90,mir:false},
+ {id:'desk',label:'Desk',name:'Desk + chair space',w:160,h:155,rects:[[0,0,160,80],[40,80,80,75,1]],x:507.5,y:455,rot:270,mir:false},
+ {id:'bs3',label:'Bookshelf 3',name:'Bookshelf 3',w:147,h:39.5,rects:[[0,0,147,39.5]],x:678,y:425,rot:90,mir:false}
+];
+const KEY='apt-layout-v1';
+let pieces=load(); let selId='sofa'; let drag=null; let zoom=1;
+const svg=document.getElementById('plan');
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function load(){
+  let saved=null; try{saved=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(!Array.isArray(saved)) return clone(DEFAULTS);
+  const out=DEFAULTS.map(d=>{const v=saved.find(q=>q&&q.id===d.id);return v?Object.assign(clone(d),{x:v.x,y:v.y,rot:v.rot,mir:v.mir}):clone(d)});
+  const pi=out.find(q=>q.id==='piano'), wa=out.find(q=>q.id==='mwardrobe');
+  if(rectsOf(pi).some(a=>rectsOf(wa).some(b=>overlap(a,b)))) Object.assign(pi,clone(DEFAULTS.find(d=>d.id==='piano')));
+  return out;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(pieces))}catch(e){}}
+function dims(p){return (p.rot%180===0)?{W:p.w,H:p.h}:{W:p.h,H:p.w}}
+function rectsOf(p){
+  const W=p.w,H=p.h;
+  return p.rects.map(([x,y,w,h,k])=>{
+    if(p.mir) x=W-x-w;
+    let r;
+    if(p.rot===0) r=[x,y,w,h];
+    else if(p.rot===90) r=[H-y-h,x,h,w];
+    else if(p.rot===180) r=[W-x-w,H-y-h,w,h];
+    else r=[y,W-x-w,h,w];
+    return {x:r[0]+p.x,y:r[1]+p.y,w:r[2],h:r[3],k:!!k};
+  });
+}
+const inR=(px,py,r)=>px>=r.x-0.01&&px<=r.x+r.w+0.01&&py>=r.y-0.01&&py<=r.y+r.h+0.01;
+const inFloor=(px,py)=>FLOOR.some(r=>inR(px,py,r));
+function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
+function onFloor(r){
+  const nx=Math.max(1,Math.ceil(r.w/5)),ny=Math.max(1,Math.ceil(r.h/5));
+  for(let i=0;i<=nx;i++)for(let j=0;j<=ny;j++){
+    const px=r.x+0.3+(r.w-0.6)*i/nx, py=r.y+0.3+(r.h-0.6)*j/ny;
+    if(!inFloor(px,py)) return false;
+  }
+  return true;
+}
+function bbox(p){const d=dims(p);return {x:p.x,y:p.y,w:d.W,h:d.H}}
+function roomName(p){const b=bbox(p),cx=b.x+b.w/2,cy=b.y+b.h/2;const r=ROOMS.find(R=>R.r.some(q=>inR(cx,cy,q)));return r?r.name:'Between rooms'}
+function problems(p){
+  const out=[]; const rs=rectsOf(p);
+  if(!rs.every(onFloor)) out.push('goes past a wall');
+  pieces.forEach(o=>{if(o.id===p.id)return;const os=rectsOf(o);
+    if(rs.some(a=>os.some(b=>overlap(a,b)))) out.push('overlaps the '+o.name.toLowerCase())});
+  const seen={};
+  STATIC.forEach(s=>{if(!seen[s.name]&&rs.some(a=>overlap(a,s))){seen[s.name]=1;out.push((s.door?'blocks the ':'overlaps the ')+s.name)}});
+  return out;
+}
+function clearances(p){
+  const b=bbox(p); const obs=[];
+  pieces.forEach(o=>{if(o.id!==p.id) rectsOf(o).forEach(r=>obs.push(r))});
+  STATIC.forEach(s=>{if(!s.door) obs.push(s)});
+  const blocked=(x,y)=>!inFloor(x,y)||obs.some(o=>x>o.x+0.01&&x<o.x+o.w-0.01&&y>o.y+0.01&&y<o.y+o.h-0.01);
+  const ray=(x,y,dx,dy)=>{let d=0;while(d<1300){const nx=x+dx*(d+0.5),ny=y+dy*(d+0.5);if(blocked(nx,ny))break;d+=1}return d};
+  const sx=[b.x+3,b.x+b.w/2,b.x+b.w-3], sy=[b.y+3,b.y+b.h/2,b.y+b.h-3];
+  const res={
+    left:Math.min(...sy.map(y=>ray(b.x,y,-1,0))),
+    right:Math.min(...sy.map(y=>ray(b.x+b.w,y,1,0))),
+    top:Math.min(...sx.map(x=>ray(x,b.y,0,-1))),
+    bottom:Math.min(...sx.map(x=>ray(x,b.y+b.h,0,1)))};
+  return res;
+}
+const fmt=n=>Math.round(n);
+
+function drawPlan(){
+  let s='';
+  // wall mass, then floors cut out of it
+  s+=`<rect class="wall" x="-15" y="-15" width="1230" height="645"/>`;
+  s+=`<rect fill="var(--surface)" x="-15" y="-15" width="160" height="197.5"/>`; // pipe well area outside the flat's rooms
+  s+=`<rect class="wall" x="145" y="-15" width="15" height="197.5"/><rect class="wall" x="-15" y="167.5" width="175" height="15"/>`;
+  s+=`<rect fill="var(--surface)" x="1025" y="-15" width="190" height="250"/><rect class="wall" x="1025" y="-15" width="10" height="265"/><rect class="wall" x="1025" y="235" width="190" height="15"/>`;
+  s+=`<rect fill="var(--surface)" x="1025" y="595" width="190" height="35"/><rect class="wall" x="1025" y="580" width="190" height="15"/>`;
+  FLOOR.forEach(r=>{s+=`<rect class="zone" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/>`});
+  // bathrooms and fixed areas
+  s+=`<rect class="fixed" x="170" y="0" width="160" height="235"/><text class="flabel" x="250" y="120" text-anchor="middle">MASTER BATH</text>`;
+  s+=`<rect class="fixed" x="337.5" y="0" width="230" height="235"/><text class="flabel" x="452" y="120" text-anchor="middle">BATHROOM</text>`;
+  s+=`<text class="flabel" x="65" y="90" text-anchor="middle">PIPE WELL</text>`;
+  // grid
+  for(let x=50;x<1200;x+=50) s+=`<line class="grid" x1="${x}" y1="0" x2="${x}" y2="615" opacity=".6"/>`;
+  for(let y=50;y<615;y+=50) s+=`<line class="grid" x1="0" y1="${y}" x2="1200" y2="${y}" opacity=".6"/>`;
+  // re-cover grid on non-floor
+  s+=`<rect class="fixed" x="170" y="0" width="160" height="235" opacity=".85"/><rect class="fixed" x="337.5" y="0" width="230" height="235" opacity=".85"/>`;
+  // room labels
+  [['MASTER BEDROOM',132,320],['DAUGHTER',433,607],['OFFICE',628,603],['HELPER',637,30],['DINING',875,235],['LIVING',875,600],['KITCHEN',1087,500],['CORRIDOR',550,296]].forEach(([t,x,y])=>{s+=`<text class="rlabel" x="${x}" y="${y}" text-anchor="middle">${t}</text>`});
+  // windows / balcony
+  const glass=(x1,x2,y)=>`<line class="glass" x1="${x1}" y1="${y+4}" x2="${x2}" y2="${y+4}"/><line class="glass" x1="${x1}" y1="${y+11}" x2="${x2}" y2="${y+11}"/>`;
+  s+=glass(282.5,472.5,615)+glass(507.5,672.5,615)+glass(775,982,615);
+  s+=`<text class="olabel" x="878" y="642" text-anchor="middle">Sliding door to balcony</text>`;
+  s+=`<text class="olabel" x="377" y="642" text-anchor="middle">Window</text><text class="olabel" x="590" y="642" text-anchor="middle">Window</text>`;
+  // doors
+  const door=d=>`<path class="door" d="${d}"/>`;
+  s+=`<rect class="zone" x="920" y="-15" width="90" height="15"/>`+door('M1010 0 L1010 90 M920 0 A90 90 0 0 0 1010 90');
+  s+=`<text class="olabel" x="965" y="-19" text-anchor="middle">Entrance</text>`;
+  s+=door('M1035 262 L1111 262 M1111 262 A76 76 0 0 1 1035 338');
+  s+=door('M468.5 340 L468.5 422 M386.5 340 A82 82 0 0 0 468.5 422');
+  s+=door('M701.5 340 L701.5 417 M624.5 340 A77 77 0 0 0 701.5 417');
+  s+=door('M381 333 L297 333 M297 333 A84 84 0 0 1 381 249');
+  s+=door('M700 235 L700 151 M615 235 A85 85 0 0 1 700 151');
+  s+=`<rect class="zone" x="197" y="615" width="60" height="15"/>`+door('M257 615 L257 675 M197 615 A60 60 0 0 0 257 675');
+  s+=`<text class="olabel" x="227" y="688" text-anchor="middle">Utility platform</text>`;
+  // overall dimension
+  s+=`<line class="diml" x1="0" y1="-24" x2="1200" y2="-24"/><line class="diml" x1="0" y1="-28" x2="0" y2="-20"/><line class="diml" x1="1200" y1="-28" x2="1200" y2="-20"/>`;
+  s+=`<text class="dimt" x="600" y="-27" text-anchor="middle">about 1200</text>`;
+  s+=`<rect class="fixed" x="1139" y="317" width="61" height="263"/><rect class="fixed" x="1035" y="517" width="165" height="63"/>`;
+  s+=`<rect x="1066" y="527" width="36" height="39" rx="3" fill="none" stroke="var(--muted)" stroke-width=".7"/><rect x="1106" y="527" width="27" height="39" rx="3" fill="none" stroke="var(--muted)" stroke-width=".7"/>`;
+  s+=`<text class="olabel" transform="translate(1170 420) rotate(90)" text-anchor="middle">Built-in counter</text>`;
+  return s;
+}
+const PLAN=drawPlan();
+
+function render(){
+  let s=PLAN;
+  const order=pieces.filter(p=>p.id!==selId).concat(pieces.filter(p=>p.id===selId));
+  order.forEach(p=>{
+    const bad=problems(p).length>0;
+    s+=`<g class="piece${p.id===selId?' sel':''}${bad?' bad':''}" data-id="${p.id}">`;
+    const rs=rectsOf(p);
+    rs.forEach(r=>{s+=`<rect${r.k?' class="seat"':''} x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="2"/>`;
+      if(r.k) s+=`<text transform="translate(${r.x+r.w/2} ${r.y+r.h/2})" y="3" text-anchor="middle" class="seatt">Chair</text>`});
+    const big=rs.slice().sort((a,c)=>c.w*c.h-a.w*a.h)[0];
+    const vert=big.w<70&&big.h>big.w;
+    s+=`<text transform="translate(${big.x+big.w/2} ${big.y+big.h/2})${vert?' rotate(-90)':''}" y="3" text-anchor="middle">${p.label}</text></g>`;
+  });
+  const p=pieces.find(q=>q.id===selId);
+  if(p){const c=clearances(p),b=bbox(p),cx=b.x+b.w/2,cy=b.y+b.h/2;
+    const dl=(x1,y1,x2,y2,t,tx,ty)=>{if(Math.abs(x2-x1)+Math.abs(y2-y1)<4)return'';
+      return `<line class="diml" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><text class="dimt" x="${tx}" y="${ty}" text-anchor="middle">${t}</text>`};
+    s+=dl(b.x-c.left,cy,b.x,cy,fmt(c.left),b.x-c.left/2,cy-3);
+    s+=dl(b.x+b.w,cy,b.x+b.w+c.right,cy,fmt(c.right),b.x+b.w+c.right/2,cy-3);
+    s+=dl(cx,b.y-c.top,cx,b.y,fmt(c.top),cx+12,b.y-c.top/2+3);
+    s+=dl(cx,b.y+b.h,cx,b.y+b.h+c.bottom,fmt(c.bottom),cx+12,b.y+b.h+c.bottom/2+3);
+  }
+  svg.innerHTML=s;
+  renderPanel();
+}
+
+function renderPanel(){
+  document.getElementById('chips').innerHTML=pieces.map(p=>`<button type="button" data-sel="${p.id}" aria-pressed="${p.id===selId}">${p.name}</button>`).join('');
+  const p=pieces.find(q=>q.id===selId); const d=document.getElementById('detail');
+  document.getElementById('mir').disabled=!(p&&p.id==='sofa');
+  document.getElementById('rot').disabled=!p;
+  if(!p){d.innerHTML='';return}
+  const c=clearances(p); const pr=problems(p);
+  d.innerHTML=`<p class="room">${roomName(p)}</p><p class="spec">${p.name}: ${p.id==='desk'?'160 × 80 cm + 75 cm chair space':p.w+' × '+p.h+' cm'}${p.id==='sofa'?' · L-shape, seat/chaise ~90 cm deep':''}</p>
+   <dl class="clear"><dt>Free space above</dt><dd>${fmt(c.top)} cm</dd><dt>Free space below</dt><dd>${fmt(c.bottom)} cm</dd>
+   <dt>Free space left</dt><dd>${fmt(c.left)} cm</dd><dt>Free space right</dt><dd>${fmt(c.right)} cm</dd></dl>
+   ${pr.length?`<p class="warn">This piece ${pr.join(', ')}.</p>`:''}`;
+}
+
+function pt(e){const m=svg.getScreenCTM().inverse();const q=svg.createSVGPoint();q.x=e.clientX;q.y=e.clientY;return q.matrixTransform(m)}
+svg.addEventListener('pointerdown',e=>{
+  const g=e.target.closest('[data-id]'); if(!g)return;
+  selId=g.dataset.id; const p=pieces.find(q=>q.id===selId); const q=pt(e);
+  drag={dx:q.x-p.x,dy:q.y-p.y}; svg.setPointerCapture(e.pointerId); e.preventDefault(); render();
+});
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return; const p=pieces.find(q=>q.id===selId); const q=pt(e); const d=dims(p);
+  let x=Math.round((q.x-drag.dx)/2.5)*2.5, y=Math.round((q.y-drag.dy)/2.5)*2.5;
+  x=Math.max(-10,Math.min(1210-d.W,x)); y=Math.max(-10,Math.min(625-d.H,y));
+  if(x!==p.x||y!==p.y){p.x=x;p.y=y;render()}
+});
+const end=()=>{if(drag){drag=null;save()}};
+svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+
+document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('[data-sel]');if(b){selId=b.dataset.sel;render()}});
+document.getElementById('rot').addEventListener('click',()=>{
+  const p=pieces.find(q=>q.id===selId); if(!p)return; const b=bbox(p); const cx=b.x+b.w/2,cy=b.y+b.h/2;
+  p.rot=(p.rot+90)%360; const d=dims(p); p.x=Math.round((cx-d.W/2)/2.5)*2.5; p.y=Math.round((cy-d.H/2)/2.5)*2.5; save(); render();
+});
+document.getElementById('mir').addEventListener('click',()=>{const p=pieces.find(q=>q.id===selId);if(p&&p.id==='sofa'){p.mir=!p.mir;save();render()}});
+document.getElementById('reset').addEventListener('click',()=>{pieces=clone(DEFAULTS);selId='sofa';save();render()});
+document.querySelector('.zoombar').addEventListener('click',e=>{
+  const b=e.target.closest('[data-z]'); if(!b)return; zoom=+b.dataset.z;
+  document.querySelectorAll('[data-z]').forEach(t=>t.setAttribute('aria-pressed',t===b));
+  svg.style.width=(zoom*100)+'%';
+});
+render();
+})();
+</script>
+</body>
+</html>
