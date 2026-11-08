@@ -163,7 +163,7 @@ const FLOOR=[
  {x:575,y:0,w:125,h:235},               // helper room (ST)
  {x:725,y:0,w:300,h:615},               // living / dining
  {x:1035,y:250,w:165,h:330},            // kitchen
- {x:386.5,y:333,w:82,h:7},{x:624.5,y:333,w:77,h:7},{x:615,y:235,w:85,h:15},{x:1025,y:262,w:10,h:76} // door openings
+ {x:386.5,y:333,w:82,h:7},{x:624.5,y:333,w:77,h:7},{x:606,y:235,w:78,h:15},{x:1025,y:262,w:10,h:76} // door openings
 ];
 const ROOMS=[
  {name:'Master bedroom',r:[{x:0,y:182.5,w:265,h:432.5},{x:265,y:250,w:116,h:83}]},
@@ -181,7 +181,7 @@ const STATIC=[
  {x:386.5,y:340,w:82,h:82,name:"daughter's room door swing",door:1},
  {x:624.5,y:340,w:77,h:77,name:'office door swing',door:1},
  {x:297,y:250,w:84,h:83,name:'master bedroom door swing',door:1},
- {x:615,y:151,w:85,h:84,name:"helper's room door swing",door:1},
+ {x:606,y:157,w:78,h:78,name:"helper's room door swing",door:1},
  {x:1139,y:317,w:61,h:263,name:'built-in counter'},
  {x:1035,y:517,w:165,h:63,name:'built-in counter'}
 ];
@@ -288,7 +288,7 @@ function drawPlan(){
   s+=door('M468.5 340 L468.5 422 M386.5 340 A82 82 0 0 0 468.5 422');
   s+=door('M701.5 340 L701.5 417 M624.5 340 A77 77 0 0 0 701.5 417');
   s+=door('M381 333 L297 333 M297 333 A84 84 0 0 1 381 249');
-  s+=door('M700 235 L700 151 M615 235 A85 85 0 0 1 700 151');
+  s+=door('M684 235 L684 157 M606 235 A78 78 0 0 1 684 157');
   s+=`<rect class="zone" x="197" y="615" width="60" height="15"/>`+door('M257 615 L257 675 M197 615 A60 60 0 0 0 257 675');
   s+=`<text class="olabel" x="227" y="688" text-anchor="middle">Utility platform</text>`;
   // overall dimension
@@ -368,7 +368,7 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026110604';
+const APP_VERSION='2026110801';
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
