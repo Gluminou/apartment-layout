@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08",
+ "updated": "2026-11-10 (your saved layout)",
  "pieces": [
   {
    "id": "dining",
@@ -250,7 +250,7 @@
     ]
    ],
    "x": 727.5,
-   "y": 87.5,
+   "y": 25,
    "rot": 90,
    "mir": false
   },
@@ -287,8 +287,8 @@
      28
     ]
    ],
-   "x": 730,
-   "y": 2.5,
+   "x": 727.5,
+   "y": 167.5,
    "rot": 90,
    "mir": false
   },
@@ -376,5 +376,5 @@
    "mir": false
   }
  ],
- "notes": "<h3>Living &amp; dining</h3>\n      <ul>\n        <li><b>Sofa</b> against the kitchen wall, chaise toward the dining area. <b>TV stand</b> on the office wall facing it, about 91 cm of walkway between the two zones.</li>\n        <li><b>Coffee table</b> in front of the seat, next to the chaise. Only about 14 cm from the seat: sliding it 15 to 20 cm toward the TV gives more knee room and still leaves about 70 cm to walk.</li>\n        <li><b>Bookshelf (dining)</b> beside the TV stand, <b>Bookshelf 2</b> by the kitchen door.</li>\n        <li><b>Dining table</b> against the kitchen-side wall, so chairs pull out on three sides. <b>Piano</b> on the opposite wall, with <b>Bookshelf 1</b> next to it near the entrance. <b>Shoe rack</b> just inside the entrance.</li>\n        <li><b>Kitchen shelf unit</b> below the kitchen door, about 68 cm from the L-shaped counter.</li>\n      </ul>\n      <h3>Master bedroom</h3>\n      <ul>\n        <li><b>Wardrobe (to buy)</b> in the recess: up to 140 × 60 cm. Measure the height under the bulkhead before buying.</li>\n        <li><b>Bed</b> headboard on the outer wall, with the <b>bedstand</b> beside it and about 63 cm at the foot to reach the utility platform door. The window wall stays clear.</li>\n      </ul>\n      <h3>Daughter's room</h3>\n      <ul>\n        <li><b>Wardrobe</b> beside the door, <b>bed</b> along the master bedroom wall, <b>bedside table</b> by the window.</li>\n        <li>The window sill is low and one pane opens: fit a window restrictor, and keep climbable furniture away from the window where possible.</li>\n      </ul>\n      <h3>Office</h3>\n      <ul>\n        <li><b>Desk</b> under the window with 75 cm of chair space, <b>Bookshelf 3</b> on the wall shared with your daughter's room.</li>\n      </ul>\n      <h3>Helper's room</h3>\n      <ul><li><b>Helper bed</b> (175 × 80 cm) along the long wall, head at the far end. The door (about 78 cm, hinged about 12 cm from the side wall, measured from the floor plan) hits its foot, so it shows red: the door opens to about 60°, leaving roughly 65 cm to pass. For the door to open fully, an 80 cm wide bed can be at most about 160 cm long. A door rehung to open outward, or a folding door, would clear it fully.</li>\n        <li>Keep the wall cabinet by the door reachable: nothing tall in front of it.</li></ul>"
+ "notes": "<h3>Living &amp; dining</h3>\n      <ul>\n        <li><b>Sofa</b> against the kitchen wall, chaise toward the dining area. <b>TV stand</b> on the office wall facing it, about 91 cm of walkway between the two zones.</li>\n        <li><b>Coffee table</b> in front of the seat, next to the chaise. Only about 14 cm from the seat: sliding it 15 to 20 cm toward the TV gives more knee room and still leaves about 70 cm to walk.</li>\n        <li><b>Bookshelf (dining)</b> beside the TV stand, <b>Bookshelf 2</b> by the kitchen door.</li>\n        <li><b>Dining table</b> against the kitchen-side wall, so chairs pull out on three sides. <b>Piano</b> on the opposite wall near the entrance, with <b>Bookshelf 1</b> just after it toward the corridor. <b>Shoe rack</b> just inside the entrance.</li>\n        <li><b>Kitchen shelf unit</b> below the kitchen door, about 68 cm from the L-shaped counter.</li>\n      </ul>\n      <h3>Master bedroom</h3>\n      <ul>\n        <li><b>Wardrobe (to buy)</b> in the recess: up to 140 × 60 cm. Measure the height under the bulkhead before buying.</li>\n        <li><b>Bed</b> headboard on the outer wall, with the <b>bedstand</b> beside it and about 63 cm at the foot to reach the utility platform door. The window wall stays clear.</li>\n      </ul>\n      <h3>Daughter's room</h3>\n      <ul>\n        <li><b>Wardrobe</b> beside the door, <b>bed</b> along the master bedroom wall, <b>bedside table</b> by the window.</li>\n        <li>The window sill is low and one pane opens: fit a window restrictor, and keep climbable furniture away from the window where possible.</li>\n      </ul>\n      <h3>Office</h3>\n      <ul>\n        <li><b>Desk</b> under the window with 75 cm of chair space, <b>Bookshelf 3</b> on the wall shared with your daughter's room.</li>\n      </ul>\n      <h3>Helper's room</h3>\n      <ul><li><b>Helper bed</b> (175 × 80 cm) along the long wall, head at the far end. The door (about 78 cm, hinged about 12 cm from the side wall, measured from the floor plan) hits its foot, so it shows red: the door opens to about 60°, leaving roughly 65 cm to pass. For the door to open fully, an 80 cm wide bed can be at most about 160 cm long. A door rehung to open outward, or a folding door, would clear it fully.</li>\n        <li>Keep the wall cabinet by the door reachable: nothing tall in front of it.</li></ul>"
 }
