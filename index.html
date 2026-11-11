@@ -101,7 +101,7 @@ ol,ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
         <button id="mir" type="button">Mirror</button>
         <button id="reset" type="button">Reset to proposal</button>
       </div>
-      <p class="hint">Pieces snap to 2.5 cm. A red piece goes past a wall, overlaps another piece or a built-in counter, or blocks a door swing.</p>
+      <p class="hint">Pieces snap to 2.5 cm. A red piece goes past a wall (allowing for the 1.8 cm baseboards), overlaps another piece or a built-in counter, or blocks a door swing.</p>
     </div>
 
     <div class="box notes" id="notes">
@@ -219,12 +219,15 @@ function rectsOf(p){
 }
 const inR=(px,py,r)=>px>=r.x-0.01&&px<=r.x+r.w+0.01&&py>=r.y-0.01&&py<=r.y+r.h+0.01;
 const inFloor=(px,py)=>FLOOR.some(r=>inR(px,py,r));
+// Baseboards: 1.8 cm along every wall. A point counts as usable floor only if it is at least that far from any wall.
+const BASEBOARD=1.8;
+const usable=(px,py)=>inFloor(px,py)&&inFloor(px-BASEBOARD,py)&&inFloor(px+BASEBOARD,py)&&inFloor(px,py-BASEBOARD)&&inFloor(px,py+BASEBOARD);
 function overlap(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01&&a.y<b.y+b.h-0.01&&b.y<a.y+a.h-0.01}
 function onFloor(r){
   const nx=Math.max(1,Math.ceil(r.w/5)),ny=Math.max(1,Math.ceil(r.h/5));
   for(let i=0;i<=nx;i++)for(let j=0;j<=ny;j++){
     const px=r.x+0.3+(r.w-0.6)*i/nx, py=r.y+0.3+(r.h-0.6)*j/ny;
-    if(!inFloor(px,py)) return false;
+    if(!usable(px,py)) return false;
   }
   return true;
 }
@@ -243,7 +246,7 @@ function clearances(p){
   const b=bbox(p); const obs=[];
   pieces.forEach(o=>{if(o.id!==p.id) rectsOf(o).forEach(r=>obs.push(r))});
   STATIC.forEach(s=>{if(!s.door) obs.push(s)});
-  const blocked=(x,y)=>!inFloor(x,y)||obs.some(o=>x>o.x+0.01&&x<o.x+o.w-0.01&&y>o.y+0.01&&y<o.y+o.h-0.01);
+  const blocked=(x,y)=>!usable(x,y)||obs.some(o=>x>o.x+0.01&&x<o.x+o.w-0.01&&y>o.y+0.01&&y<o.y+o.h-0.01);
   const ray=(x,y,dx,dy)=>{let d=0;while(d<1300){const nx=x+dx*(d+0.5),ny=y+dy*(d+0.5);if(blocked(nx,ny))break;d+=1}return d};
   const sx=[b.x+3,b.x+b.w/2,b.x+b.w-3], sy=[b.y+3,b.y+b.h/2,b.y+b.h-3];
   const res={
@@ -368,7 +371,7 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026111102';
+const APP_VERSION='2026111103';
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
