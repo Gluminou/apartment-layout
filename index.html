@@ -43,6 +43,8 @@ svg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-web
 button{font:600 .9rem var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);
   border-radius:4px;padding:7px 12px;cursor:pointer}
 button:hover{border-color:var(--furn-edge)}
+button.danger{color:var(--bad);border-color:var(--bad)}
+button.danger.armed{background:var(--bad);color:var(--surface)}
 button.primary{background:var(--sel);border-color:var(--sel);color:var(--surface)}
 #saveCode{width:100%;box-sizing:border-box;font:12px var(--f-mono);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px;margin-top:6px;resize:vertical}
 button:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
@@ -96,9 +98,11 @@ ol,ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
       <h2>Furniture</h2>
       <div class="chips" id="chips"></div>
       <div id="detail"></div>
+      <div id="removedBox" hidden><p class="hint">Removed (tap to put back):</p><div class="chips" id="removedChips"></div></div>
       <div class="actions">
         <button id="rot" type="button">Rotate 90°</button>
         <button id="mir" type="button">Mirror</button>
+        <button id="remove" type="button" class="danger">Remove</button>
         <button id="reset" type="button">Reset to proposal</button>
       </div>
       <p class="hint">Pieces snap to 2.5 cm. A red piece goes past a wall (allowing for the 1.8 cm baseboards), overlaps another piece or a built-in counter, or blocks a door swing.</p>
@@ -200,9 +204,15 @@ function load(){
     const fresh=!v||(v.def&&v.def!==sig(d))||(!v.def&&(v.w!==d.w||v.h!==d.h));
     return fresh?clone(d):Object.assign(clone(d),{x:v.x,y:v.y,rot:v.rot,mir:v.mir})});
   const pi=out.find(q=>q.id==='piano'), wa=out.find(q=>q.id==='mwardrobe');
-  if(rectsOf(pi).some(a=>rectsOf(wa).some(b=>overlap(a,b)))) Object.assign(pi,clone(DEFAULTS.find(d=>d.id==='piano')));
-  return out;
+  if(pi&&wa&&rectsOf(pi).some(a=>rectsOf(wa).some(b=>overlap(a,b)))) Object.assign(pi,clone(DEFAULTS.find(d=>d.id==='piano')));
+  // Pieces the viewer removed stay removed, unless the proposal for that piece changed since.
+  const rem=getRemoved();
+  return out.filter(p=>{const r=rem.find(x=>x.id===p.id); const d=DEFAULTS.find(q=>q.id===p.id); return !(r&&d&&r.def===sig(d))});
 }
+const REMOVED_KEY=KEY+'-removed';
+function getRemoved(){try{const r=JSON.parse(localStorage.getItem(REMOVED_KEY));return Array.isArray(r)?r:[]}catch(e){return []}}
+function setRemoved(r){try{localStorage.setItem(REMOVED_KEY,JSON.stringify(r))}catch(e){}}
+function removedPieces(){return DEFAULTS.filter(d=>!pieces.some(p=>p.id===d.id))}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(pieces.map(p=>{const d=DEFAULTS.find(q=>q.id===p.id);return {id:p.id,x:p.x,y:p.y,rot:p.rot,mir:p.mir,w:p.w,h:p.h,def:d?sig(d):''}})))}catch(e){}}
 function dims(p){return (p.rot%180===0)?{W:p.w,H:p.h}:{W:p.h,H:p.w}}
 function rectsOf(p){
@@ -335,6 +345,9 @@ function renderPanel(){
   const p=pieces.find(q=>q.id===selId); const d=document.getElementById('detail');
   document.getElementById('mir').disabled=!(p&&p.id==='sofa');
   document.getElementById('rot').disabled=!p;
+  const rb=document.getElementById('remove'); rb.disabled=!p; if(!p||rb.dataset.armed!==selId){rb.classList.remove('armed');rb.textContent='Remove';delete rb.dataset.armed;}
+  const gone=removedPieces(); const box=document.getElementById('removedBox'); box.hidden=!gone.length;
+  document.getElementById('removedChips').innerHTML=gone.map(d=>`<button type="button" data-restore="${d.id}">+ ${d.name}</button>`).join('');
   if(!p){d.innerHTML='';return}
   const c=clearances(p); const pr=problems(p);
   d.innerHTML=`<p class="room">${roomName(p)}</p><p class="spec">${p.name}: ${p.id==='desk'?'160 × 80 cm + 75 cm chair space':p.w+' × '+p.h+' cm'}${p.id==='sofa'?' · L-shape, seat/chaise ~90 cm deep':''}</p>
@@ -364,14 +377,28 @@ document.getElementById('rot').addEventListener('click',()=>{
   p.rot=(p.rot+90)%360; const d=dims(p); p.x=Math.round((cx-d.W/2)/2.5)*2.5; p.y=Math.round((cy-d.H/2)/2.5)*2.5; save(); render();
 });
 document.getElementById('mir').addEventListener('click',()=>{const p=pieces.find(q=>q.id===selId);if(p&&p.id==='sofa'){p.mir=!p.mir;save();render()}});
-document.getElementById('reset').addEventListener('click',()=>{pieces=clone(DEFAULTS);selId='sofa';save();render()});
+document.getElementById('reset').addEventListener('click',()=>{setRemoved([]);pieces=clone(DEFAULTS);selId='sofa';save();render()});
+let armTimer=null;
+document.getElementById('remove').addEventListener('click',()=>{
+  const rb=document.getElementById('remove'); const p=pieces.find(q=>q.id===selId); if(!p) return;
+  if(rb.dataset.armed!==p.id){ rb.dataset.armed=p.id; rb.classList.add('armed'); rb.textContent='Tap again to remove '+p.label;
+    clearTimeout(armTimer); armTimer=setTimeout(()=>{delete rb.dataset.armed; rb.classList.remove('armed'); rb.textContent='Remove'},4000); return; }
+  clearTimeout(armTimer); delete rb.dataset.armed;
+  const d=DEFAULTS.find(q=>q.id===p.id); const rem=getRemoved().filter(x=>x.id!==p.id); if(d) rem.push({id:p.id,def:sig(d)}); setRemoved(rem);
+  pieces=pieces.filter(q=>q.id!==p.id); selId=null; save(); render();
+});
+document.getElementById('removedChips').addEventListener('click',e=>{
+  const b=e.target.closest('[data-restore]'); if(!b) return; const id=b.dataset.restore;
+  setRemoved(getRemoved().filter(x=>x.id!==id)); const d=DEFAULTS.find(q=>q.id===id);
+  if(d&&!pieces.some(p=>p.id===id)) pieces.push(clone(d)); selId=id; save(); render();
+});
 document.querySelector('.zoombar').addEventListener('click',e=>{
   const b=e.target.closest('[data-z]'); if(!b)return; zoom=+b.dataset.z;
   document.querySelectorAll('[data-z]').forEach(t=>t.setAttribute('aria-pressed',t===b));
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026111103';
+const APP_VERSION='2026111601';
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
@@ -413,7 +440,9 @@ document.getElementById('saveLayout').addEventListener('click',async()=>{
   const panel=document.getElementById('savePanel'), msg=document.getElementById('saveMsg'), ta=document.getElementById('saveCode');
   ta.value=code; panel.hidden=false;
   const names=moved.map(p=>p.name);
-  const summary=moved.length?('Changed from the proposal: '+names.join(', ')+'.'):'No changes from the current proposal.';
+  const gone=removedPieces().map(d=>d.name);
+  let summary=moved.length?('Changed from the proposal: '+names.join(', ')+'.'):(gone.length?'':'No changes from the current proposal.');
+  if(gone.length) summary+=(summary?' ':'')+'Removed: '+gone.join(', ')+'.';
   let how='';
   try{ if(navigator.share){ await navigator.share({title:'Apartment layout',text:'Here is my saved apartment layout:\n'+code}); how='Sent. '; } }catch(e){ how=''; }
   if(!how){ try{ await navigator.clipboard.writeText(code); how='Copied. '; }catch(e){ ta.focus(); ta.select(); how='Select the code below and copy it. '; } }

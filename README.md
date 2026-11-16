@@ -4,7 +4,7 @@ To-scale, interactive floor plan of our apartment, with every piece of furniture
 
 - Drag any piece, including from one room to another.
 - Tap a piece to see its clearances to walls and other furniture.
-- Rotate, Mirror (sofa) and Reset to proposal.
+- Rotate, Mirror (sofa), Remove (tap twice) and Reset to proposal. Removed pieces are listed under the furniture, tap one to put it back.
 - A piece turns red when it goes past a wall, overlaps another piece or a built-in counter, or blocks a door swing.
 
 One self-contained HTML file, no install. Open `index.html` in a browser, or use the GitHub Pages link once Pages is enabled.
