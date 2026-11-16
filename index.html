@@ -224,7 +224,7 @@ function rectsOf(p){
     else if(p.rot===90) r=[H-y-h,x,h,w];
     else if(p.rot===180) r=[W-x-w,H-y-h,w,h];
     else r=[y,W-x-w,h,w];
-    return {x:r[0]+p.x,y:r[1]+p.y,w:r[2],h:r[3],k:!!k};
+    return {x:r[0]+p.x,y:r[1]+p.y,w:r[2],h:r[3],k:!!k,t:typeof k==='string'?k:'Chair'};
   });
 }
 const inR=(px,py,r)=>px>=r.x-0.01&&px<=r.x+r.w+0.01&&py>=r.y-0.01&&py<=r.y+r.h+0.01;
@@ -322,7 +322,7 @@ function render(){
     s+=`<g class="piece${p.id===selId?' sel':''}${bad?' bad':''}" data-id="${p.id}">`;
     const rs=rectsOf(p);
     rs.forEach(r=>{s+=`<rect${r.k?' class="seat"':''} x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="2"/>`;
-      if(r.k) s+=`<text transform="translate(${r.x+r.w/2} ${r.y+r.h/2})" y="3" text-anchor="middle" class="seatt">Chair</text>`});
+      if(r.k) s+=`<text transform="translate(${r.x+r.w/2} ${r.y+r.h/2})" y="3" text-anchor="middle" class="seatt">${r.t}</text>`});
     const big=rs.slice().sort((a,c)=>c.w*c.h-a.w*a.h)[0];
     const vert=big.w<70&&big.h>big.w;
     s+=`<text transform="translate(${big.x+big.w/2} ${big.y+big.h/2})${vert?' rotate(-90)':''}" y="3" text-anchor="middle">${p.label}</text></g>`;
@@ -350,7 +350,7 @@ function renderPanel(){
   document.getElementById('removedChips').innerHTML=gone.map(d=>`<button type="button" data-restore="${d.id}">+ ${d.name}</button>`).join('');
   if(!p){d.innerHTML='';return}
   const c=clearances(p); const pr=problems(p);
-  d.innerHTML=`<p class="room">${roomName(p)}</p><p class="spec">${p.name}: ${p.id==='desk'?'160 × 80 cm + 75 cm chair space':p.w+' × '+p.h+' cm'}${p.id==='sofa'?' · L-shape, seat/chaise ~90 cm deep':''}</p>
+  d.innerHTML=`<p class="room">${roomName(p)}</p><p class="spec">${p.name}: ${p.id==='desk'?'160 × 80 cm + 75 cm chair space':(p.spec||p.w+' × '+p.h+' cm')}${p.id==='sofa'?' · L-shape, seat/chaise ~90 cm deep':''}</p>
    <dl class="clear"><dt>Free space above</dt><dd>${fmt(c.top)} cm</dd><dt>Free space below</dt><dd>${fmt(c.bottom)} cm</dd>
    <dt>Free space left</dt><dd>${fmt(c.left)} cm</dd><dt>Free space right</dt><dd>${fmt(c.right)} cm</dd></dl>
    ${pr.length?`<p class="warn">This piece ${pr.join(', ')}.</p>`:''}`;
@@ -398,7 +398,7 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026111601';
+const APP_VERSION='2026111602';
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
