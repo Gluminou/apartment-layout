@@ -398,7 +398,10 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_VERSION='2026111602';
+const APP_RELEASE="1.0.0";
+const APP_DATE="2026-11-21";
+const APP_VERSION="202611210445";
+Object.assign(window,{APP_RELEASE,APP_DATE,APP_VERSION}); // read by updates.js
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
 pieces=load(); render();
@@ -416,19 +419,7 @@ async function fetchData(){
     if(data.updated) document.getElementById('appinfo').textContent='Layout last updated '+data.updated+'. Updates arrive on their own each time you open the app.';
   }catch(e){}
 }
-async function checkVersion(){
-  try{
-    const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
-    const v=(await r.json()).version;
-    if(v&&v!==APP_VERSION){
-      // Avoid a reload loop if the new version is still publishing, but try again after a minute.
-      let last=null; try{last=JSON.parse(sessionStorage.getItem('apt-reload'))}catch(e){}
-      if(last&&last.v===v&&Date.now()-last.t<60000) return;
-      try{sessionStorage.setItem('apt-reload',JSON.stringify({v,t:Date.now()}))}catch(e){}
-      location.replace(location.pathname+'?v='+v);
-    }
-  }catch(e){}
-}
+async function checkVersion(){} // update checks live in updates.js
 function refreshAll(){fetchData();checkVersion();}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') refreshAll()});
 window.addEventListener('pageshow',e=>{if(e.persisted) refreshAll()});
@@ -457,5 +448,7 @@ document.getElementById('share').addEventListener('click',async()=>{
 });
 })();
 </script>
+<div id="app-updates"></div>
+<script src="updates.js"></script>
 </body>
 </html>

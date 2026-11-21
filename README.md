@@ -21,3 +21,13 @@ Positions you move are saved in your browser on that device only.
 ## Saving a layout
 
 Tap **Save layout**. The app shares or copies a code starting with `APT1:` that lists every piece's position. Paste that code to Claude, who writes it into `furniture.json` as the official layout, so every device shows it after the next open.
+
+## Versions
+
+The app shows its version number and date at the bottom, with a **Check for update** button and a **What's new** list. Release each change with:
+
+```
+node tools/release.mjs patch "What changed, in plain words"
+```
+
+`patch` for a fix, `minor` for something new on screen, `major` for a rework. The script keeps the page, `version.json` and `changelog.json` in step. The update section itself is `updates.js`, shared by all the apps.
