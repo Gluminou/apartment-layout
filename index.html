@@ -398,9 +398,9 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_RELEASE="1.0.0";
-const APP_DATE="2026-11-21";
-const APP_VERSION="202611210445";
+const APP_RELEASE="1.0.1";
+const APP_DATE="2026-11-25";
+const APP_VERSION="202611250416";
 Object.assign(window,{APP_RELEASE,APP_DATE,APP_VERSION}); // read by updates.js
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
