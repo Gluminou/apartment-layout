@@ -398,9 +398,9 @@ document.querySelector('.zoombar').addEventListener('click',e=>{
   svg.style.width=(zoom*100)+'%';
 });
 // ---- data loading and self-update
-const APP_RELEASE="1.0.1";
-const APP_DATE="2026-11-25";
-const APP_VERSION="202611250416";
+const APP_RELEASE="1.1.0";
+const APP_DATE="2026-11-26";
+const APP_VERSION="202611260211";
 Object.assign(window,{APP_RELEASE,APP_DATE,APP_VERSION}); // read by updates.js
 const DATA_KEY='apt-furniture-cache';
 try{const c=JSON.parse(localStorage.getItem(DATA_KEY)); if(c&&Array.isArray(c.pieces)){DEFAULTS=c.pieces; if(c.notes) document.getElementById('notesBody').innerHTML=c.notes;}}catch(e){}
@@ -446,9 +446,23 @@ document.getElementById('share').addEventListener('click',async()=>{
   try{ await navigator.clipboard.writeText(url); document.getElementById('appinfo').textContent='Link copied: '+url; }
   catch(e){ document.getElementById('appinfo').textContent='Link: '+url; }
 });
+// Synced between devices through the private repo Gluminou/apartment-layout-data (see sync.js):
+// where each piece sits and which pieces were removed. The furniture list itself comes from furniture.json.
+window.APP_SYNC={app:"apartment-layout",keys:[KEY,REMOVED_KEY]}; // read by sync.js
+// Another device moved or removed a piece: reload the layout straight away, so the next save here
+// can't put back what the other device changed. A piece being dragged here keeps its place under the finger.
+function applySynced(){
+  const held=drag&&pieces.find(p=>p.id===selId);
+  pieces=load();
+  if(held){ const i=pieces.findIndex(p=>p.id===held.id); if(i>=0) pieces[i]=held; else pieces.push(held); }
+  if(!pieces.find(p=>p.id===selId)) selId=pieces[0]&&pieces[0].id;
+  render();
+}
+window.addEventListener('storage',e=>{ if(e.key===KEY||e.key===REMOVED_KEY) applySynced(); });
 })();
 </script>
 <div id="app-updates"></div>
+<script src="sync.js"></script>
 <script src="updates.js"></script>
 </body>
 </html>

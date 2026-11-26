@@ -1,5 +1,12 @@
 [
   {
+    "version": "1.1.0",
+    "date": "2026-11-26",
+    "notes": [
+      "Sync between devices: once a GitHub key is entered, where you placed or removed each piece follows you between your phone and your computer."
+    ]
+  },
+  {
     "version": "1.0.1",
     "date": "2026-11-25",
     "notes": [
