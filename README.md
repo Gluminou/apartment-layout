@@ -13,14 +13,14 @@ Positions you move are saved in your browser on that device only.
 
 ## How updates work
 
-- `furniture.json` holds the furniture list, the proposed positions and the notes. The app fetches it fresh every time it is opened or brought back to the screen, so a home-screen shortcut picks up changes without reinstalling.
+- The plan (walls, rooms, door swings), the furniture list with its proposed positions, and the notes are not in this public repo. They are `content.json` in the private repo **Gluminou/apartment-layout-data**, written into its `data.json` under `apt-content` with `node tools/content.mjs put content.json data.json apt-content`. Devices connected with a key get them through `sync.js`; without a key the app shows only the key screen.
 - `version.json` holds the app version. When `index.html` changes, the version is bumped and the app reloads itself onto the new version.
 - Positions you move yourself are kept, unless the proposal for that same piece changes. Then the new proposal replaces it.
 - **Refresh** forces a fresh load. **Share app** sends the link.
 
 ## Saving a layout
 
-Tap **Save layout**. The app shares or copies a code starting with `APT1:` that lists every piece's position. Paste that code to Claude, who writes it into `furniture.json` as the official layout, so every device shows it after the next open.
+Tap **Save layout**. The app shares or copies a code starting with `APT1:` that lists every piece's position. Paste that code to Claude, who writes it into `content.json` in the private repo as the official layout, so every device shows it after the next open.
 
 ## Versions
 
@@ -34,6 +34,6 @@ node tools/release.mjs patch "What changed, in plain words"
 
 ## Sync between devices
 
-`sync.js` (the same file in every Gluminou app) copies this app's data between devices through `data.json` in the private repo **Gluminou/apartment-layout-data**: where each piece sits and which pieces were removed (the furniture list itself stays in `furniture.json`). Each device connects once with a fine-grained GitHub key that has **Contents: Read and write** on that repo (**Read-only** gives view-only access). Paste the key in the **Sync between devices** section at the bottom of the page. On a computer the apps share one address, so a key entered in one app is offered to the others. Each app can still be disconnected on its own.
+`sync.js` (the same file in every Gluminou app) copies this app's data between devices through `data.json` in the private repo **Gluminou/apartment-layout-data**: where each piece sits and which pieces were removed, plus the plan itself. Each device connects once with a fine-grained GitHub key that has **Contents: Read and write** on that repo (**Read-only** gives view-only access). Paste the key in the **Sync between devices** section at the bottom of the page. On a computer the apps share one address, so a key entered in one app is offered to the others. Each app can still be disconnected on its own.
 
 Changes from two devices are merged item by item. When both devices changed the same thing, the latest change wins. The repo history keeps every version.

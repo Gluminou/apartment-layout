@@ -1,5 +1,12 @@
 [
   {
+    "version": "1.2.0",
+    "date": "2026-11-26",
+    "notes": [
+      "The app now asks for a key: the plan, furniture and notes are no longer public and arrive from the private repo once the device is connected."
+    ]
+  },
+  {
     "version": "1.1.1",
     "date": "2026-11-26",
     "notes": [
@@ -17,7 +24,7 @@
     "version": "1.0.1",
     "date": "2026-11-25",
     "notes": [
-      "Daughter's room: added the pink and white storage and the colourful stand"
+      "Furniture proposal updated."
     ]
   },
   {
